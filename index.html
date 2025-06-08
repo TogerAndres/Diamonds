@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Crea tu Accesorio Perfecto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comfortaa', cursive;
+            background: linear-gradient(135deg, #66beea 0%, #123f8d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 180px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+       .logo-container a {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .logo-container a:hover img {
+            transform: scale(1.05);
+            cursor: pointer;
+            filter: brightness(1.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.8s ease;
+            border-radius: 4px;
+        }
+
+        .step {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.6s ease;
+            display: none;
+        }
+
+        .step.active {
+            opacity: 1;
+            transform: translateX(0);
+            display: block;
+        }
+
+        .step.exit-left {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        .question {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .question h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .option-btn.agua-marina {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .option-btn.agua-marina:hover {
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .option-btn:hover::before {
+            left: 100%;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            background: #6c757d;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-image {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .result-image img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .result-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .loading {
+            text-align: center;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .selection-summary {
+            background: linear-gradient(135deg, #667eea 0%, #548bad 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+        .no-product-message {
+            background: linear-gradient(135deg, #667eea 0%, #4b7ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .no-product-message h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .no-product-message p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .selection-summary h3 {
+            margin-bottom: 0.5rem;
+        }
+
+/* ESTILOS PARA OPCIONES SCROLLABLES */
+        .options-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .options-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .options-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .options-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .options-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        /* RESPONSIVE PARA MÓVIL Y DESKTOP */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                margin: 0.5rem;
+                padding: 1rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+            .logo-container img {
+            max-width: 150px;
+            }
+
+            .question h2 {
+                font-size: 1.2rem;
+            }
+
+            .option-btn {
+                padding: 1rem;
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .options-container {
+                max-height: 300px;
+            }
+        }
+    </style>
+<body>
+    <div class="container">
+       <div class="logo-container">
+            <a href="juego.html">
+                <img src="Media/logo.png" alt="Logo de la App" onerror="this.style.display='none'">
+            </a>
+        </div>
+        <h1>✨Busca tu Accesorio Perfecto✨</h1>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Paso 1: Tipo de accesorio -->
+        <div class="step active" id="step1">
+            <div class="question">
+                <h2>¿Qué tipo de accesorio deseas crear?</h2>
+            </div>
+            <div class="options">
+                <button class="option-btn" onclick="selectAccessory('moña')">🪷 Moña</button>
+                <button class="option-btn agua-marina" onclick="selectAccessory('arete')">💎 Aretes</button>
+                <button class="option-btn" onclick="selectAccessory('moño')">🎀 Moño</button>
+            </div>
+        </div>
+
+       <!-- Paso 2: Opciones de Moña -->
+        <div class="step" id="step2-moña">
+            <div class="question">
+                <h2>¿Qué tipo de tela prefieres para tu moña?</h2>
+            </div>
+            <!-- SCROLLABLE OPTIONS CONTAINER -->
+            <div class="options-container">
+                <div class="options">
+                    <button class="option-btn" onclick="selectOption('satin')">✨ Satín</button>
+                    <button class="option-btn agua-marina" onclick="selectOption('peluche')">🧸 Peluche</button>
+                    <!-- PARA AGREGAR MÁS OPCIONES, COPIA Y PEGA:
+                    <button class="option-btn" onclick="selectOption('NOMBRE_OPCION')">🎀 TEXTO_VISIBLE</button>
+                    Para agua marina (avanzar), agrega clase: agua-marina
+                    -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 3: Color para Moña -->
+        <div class="step" id="step3-moña-color">
+            <div class="question">
+                <h2>¿Qué color te gusta más?</h2>
+            </div>
+            <!-- SCROLLABLE OPTIONS CONTAINER -->
+            <div class="options-container">
+                <div class="options">
+                    <button class="option-btn" onclick="selectColor('rosa')">🌸 Rosa</button>
+                    <button class="option-btn agua-marina" onclick="selectColor('azul')">💙 Azul</button>
+                    <button class="option-btn" onclick="selectColor('rojo')">❤️ Rojo</button>
+                    <button class="option-btn" onclick="selectColor('amarillo')">💛 Dorada</button>
+                    <!-- PARA AGREGAR MÁS COLORES, COPIA Y PEGA:
+                    <button class="option-btn" onclick="selectColor('NOMBRE_COLOR')">🎨 TEXTO_VISIBLE</button>
+                    Para agua marina (avanzar), agrega clase: agua-marina
+                    -->
+                </div>
+            </div>
+        </div>
+
+<!-- Paso 2: Tamaño de Arete -->
+        <div class="step" id="step2-arete">
+            <div class="question">
+                <h2>¿Qué tamaño de arete prefieres?</h2>
+            </div>
+            <!-- SCROLLABLE OPTIONS CONTAINER -->
+            <div class="options-container">
+                <div class="options">
+                    <button class="option-btn" onclick="selectSize('pequeño')">🔹 Pequeños</button>
+                    <button class="option-btn agua-marina" onclick="selectSize('mediano')">🔸 Medianos</button>
+                    <button class="option-btn" onclick="selectSize('grande')">💎 Grandes</button>
+                    <!-- PARA AGREGAR MÁS TAMAÑOS, COPIA Y PEGA:
+                    <button class="option-btn" onclick="selectSize('NOMBRE_TAMAÑO')">💫 TEXTO_VISIBLE</button>
+                    Para agua marina (avanzar), agrega clase: agua-marina
+                    -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 3: Forma de Arete -->
+        <div class="step" id="step3-arete-forma">
+            <div class="question">
+                <h2>¿Qué forma te gusta más?</h2>
+            </div>
+            <!-- SCROLLABLE OPTIONS CONTAINER -->
+            <div class="options-container">
+                <div class="options">
+                    <button class="option-btn" onclick="selectShape('redondos')">⭕ Redondos</button>
+                    <button class="option-btn agua-marina" onclick="selectShape('gota')">💧 Forma de Gota</button>
+                    <button class="option-btn" onclick="selectShape('corazón')">💖 Corazón</button>
+                    <!-- PARA AGREGAR MÁS FORMAS, COPIA Y PEGA:
+                    <button class="option-btn" onclick="selectShape('NOMBRE_FORMA')">🔸 TEXTO_VISIBLE</button>
+                    Para agua marina (avanzar), agrega clase: agua-marina
+                    -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 4: Tipo de Joya -->
+        <div class="step" id="step4-arete-joya">
+            <div class="question">
+                <h2>¿Qué tipo de joya prefieres?</h2>
+            </div>
+            <!-- SCROLLABLE OPTIONS CONTAINER -->
+            <div class="options-container">
+                <div class="options">
+                    <button class="option-btn agua-marina" onclick="selectJewel('piedra-rio')">🏔️ Piedra de Río</button>
+                    <button class="option-btn" onclick="selectJewel('murano')">💎 Piedras de Murano</button>
+                    <!-- PARA AGREGAR MÁS JOYAS, COPIA Y PEGA:
+                    <button class="option-btn" onclick="selectJewel('NOMBRE_JOYA')">✨ TEXTO_VISIBLE</button>
+                    Para agua marina (avanzar), agrega clase: agua-marina
+                    -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 5: Color de Arete -->
+        <div class="step" id="step5-arete-color">
+            <div class="question">
+                <h2>¿Qué combinación de colores prefieres?</h2>
+            </div>
+            <!-- SCROLLABLE OPTIONS CONTAINER -->
+            <div class="options-container">
+                <div class="options">
+                    <button class="option-btn" onclick="selectJewelColor('multicolores')">🌈 Multicolores</button>
+                    <button class="option-btn agua-marina" onclick="selectJewelColor('tornasol')">✨ Tornasol</button>
+                    <button class="option-btn" onclick="selectJewelColor('cristal')">💎 Cristal</button>
+                    <button class="option-btn" onclick="selectJewelColor('blanco')">⚪ Blanco</button>
+                    <!-- PARA AGREGAR MÁS COLORES, COPIA Y PEGA:
+                    <button class="option-btn" onclick="selectJewelColor('NOMBRE_COLOR')">🎨 TEXTO_VISIBLE</button>
+                    Para agua marina (avanzar), agrega clase: agua-marina
+                    -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Paso 2: Tamaño de Moño -->
+        <div class="step" id="step2-moño">
+            <div class="question">
+                <h2>¿Qué tamaño de moño prefieres?</h2>
+            </div>
+            <div class="options">
+                <button class="option-btn" onclick="selectBowSize('pequeño')">🎀 Medianos</button>
+                <button class="option-btn agua-marina" onclick="selectBowSize('grande')">🎀 Grande</button>
+            </div>
+        </div>
+
+        <!-- Paso 3: Color de Moño -->
+        <div class="step" id="step3-moño-color">
+            <div class="question">
+                <h2>¿Qué color prefieres?</h2>
+            </div>
+            <div class="options">
+                <button class="option-btn" onclick="selectBowColor('blanco')">🤍 Blanco</button>
+                <button class="option-btn agua-marina" onclick="selectBowColor('negro')">🖤 Negro</button>
+                <button class="option-btn" onclick="selectBowColor('beige')">🤎 Beige</button>
+                <button class="option-btn" onclick="selectBowColor('rosa')">💗 Rosa</button>
+            </div>
+        </div>
+
+        <!-- Paso 4: Perlas en Moño -->
+        <div class="step" id="step4-moño-perlas">
+            <div class="question">
+                <h2>¿Te gustaría agregar accesorios?</h2>
+            </div>
+            <div class="options">
+                <button class="option-btn" onclick="selectPearls('si')">✨ Sí, con accesorios</button>
+                <button class="option-btn agua-marina" onclick="selectPearls('no')">🎀 Sin accesorios</button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h3>Buscando tu accesorio perfecto...</h3>
+            <p>Eligiendo lo mejor de nuestro catálogo para ti 🛍️💎</p>
+        </div>
+
+        <!-- Resultado Final -->
+        <div class="step" id="final-result">
+            <div class="question">
+                <h2>¡Tu accesorio está listo! ✨</h2>
+            </div>
+            <div class="selection-summary" id="summary"></div>
+            <div class="result-image" id="result-image">
+                <!-- La imagen se insertará aquí -->
+            </div>
+            <div class="options">
+                <button class="option-btn agua-marina" onclick="restart()">🔄 Buscar Otro Accesorio</button>
+                <button class="option-btn" onclick="saveDesign()">💾 Guardar Diseño</button>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="goBack()" disabled>⬅️ Atrás</button>
+            <button class="nav-btn" id="nextBtn" onclick="goNext()" disabled style="display: none;">➡️ Siguiente</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let maxSteps = 1;
+        let selections = {};
+        let accessoryType = '';
+        let canGoForward = false;
+
+        function updateProgress() {
+            const progressPercent = (currentStep / maxSteps) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+        }
+
+function showStep(stepNumber) {
+    // Ocultar todos los pasos
+    const allSteps = document.querySelectorAll('.step');
+    allSteps.forEach(step => {
+        step.classList.remove('active', 'exit-left');
+        step.style.display = 'none';
+    });
+
+    // Determinar qué paso mostrar
+    let targetStep = null;
+    
+    if (stepNumber === 'final-result') {
+        targetStep = document.getElementById('final-result');
+    } else if (stepNumber === 1) {
+        targetStep = document.getElementById('step1');
+    } else {
+        // Construir ID según el paso y tipo de accesorio
+        let targetStepId = '';
+        
+        if (accessoryType === 'moña') {
+            if (stepNumber === 2) targetStepId = 'step2-moña';
+            else if (stepNumber === 3) targetStepId = 'step3-moña-color';
+        } else if (accessoryType === 'arete') {
+            if (stepNumber === 2) targetStepId = 'step2-arete';
+            else if (stepNumber === 3) targetStepId = 'step3-arete-forma';
+            else if (stepNumber === 4) targetStepId = 'step4-arete-joya';
+            else if (stepNumber === 5) targetStepId = 'step5-arete-color';
+        } else if (accessoryType === 'moño') {
+            if (stepNumber === 2) targetStepId = 'step2-moño';
+            else if (stepNumber === 3) targetStepId = 'step3-moño-color';
+            else if (stepNumber === 4) targetStepId = 'step4-moño-perlas';
+        }
+        
+        targetStep = document.getElementById(targetStepId);
+    }
+    
+    // Mostrar el paso con animación
+    if (targetStep) {
+        targetStep.style.display = 'block';
+        setTimeout(() => targetStep.classList.add('active'), 50);
+    } else {
+        console.error('No se encontró el paso:', stepNumber, 'para', accessoryType);
+    }
+
+    updateProgress();
+    updateNavigationButtons();
+}
+    // Mostrar el paso actual con animación
+    setTimeout(() => {
+        allSteps.forEach(step => step.style.display = 'none');
+        
+        let targetStepId = '';
+        if (stepNumber === 'final-result') {
+            targetStepId = 'final-result';
+        } else if (stepNumber === 1) {
+            targetStepId = 'step1';
+        } else {
+            // Construir ID según el paso y tipo de accesorio
+            if (accessoryType === 'moña') {
+                if (stepNumber === 2) targetStepId = 'step2-moña';
+                else if (stepNumber === 3) targetStepId = 'step3-moña-color';
+            } else if (accessoryType === 'arete') {
+                if (stepNumber === 2) targetStepId = 'step2-arete';
+                else if (stepNumber === 3) targetStepId = 'step3-arete-forma';
+                else if (stepNumber === 4) targetStepId = 'step4-arete-joya';
+                else if (stepNumber === 5) targetStepId = 'step5-arete-color';
+            } else if (accessoryType === 'moño') {
+                if (stepNumber === 2) targetStepId = 'step2-moño';
+                else if (stepNumber === 3) targetStepId = 'step3-moño-color';
+                else if (stepNumber === 4) targetStepId = 'step4-moño-perlas';
+            }
+        }
+        
+        const targetStep = document.getElementById(targetStepId);
+        if (targetStep) {
+            targetStep.style.display = 'block';
+            setTimeout(() => targetStep.classList.add('active'), 50);
+        }
+    }, 300);
+
+    updateProgress();
+    updateNavigationButtons();
+
+            // Mostrar el paso actual con animación
+            setTimeout(() => {
+                allSteps.forEach(step => step.style.display = 'none');
+                const targetStep = document.getElementById(`step${stepNumber}`) || 
+                                 document.getElementById(`step${stepNumber}-${accessoryType}`) ||
+                                 document.getElementById('final-result');
+                if (targetStep) {
+                    targetStep.style.display = 'block';
+                    setTimeout(() => targetStep.classList.add('active'), 50);
+                }
+            }, 300);
+
+            updateProgress();
+            updateNavigationButtons();
+        
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentStep <= 1;
+            
+            // Solo mostrar botón siguiente si puede avanzar (seleccionó agua marina)
+            if (canGoForward && currentStep < maxSteps) {
+                nextBtn.style.display = 'inline-block';
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function selectAccessory(type) {
+            console.log('Seleccionando accesorio:', type);
+            
+            accessoryType = type;
+            selections.type = type;
+            
+            // CONFIGURAR PASOS SEGÚN TIPO DE ACCESORIO
+            if (type === 'moña') {
+                maxSteps = 4;
+            } else if (type === 'arete') {
+                maxSteps = 6;
+            } else if (type === 'moño') {
+                maxSteps = 5;
+            }
+            
+            canGoForward = false;
+            currentStep = 2;
+            
+            console.log('Antes de showStep - accessoryType:', accessoryType, 'currentStep:', currentStep);
+            debugInfo();
+            
+            showStep(2);
+        }
+
+        // FUNCIÓN PARA MOÑA - MATERIAL
+        function selectOption(material) {
+            selections.material = material;
+            // SOLO PELUCHE PERMITE AVANZAR (agua marina)
+            if (material === 'peluche') {
+                canGoForward = true;
+            }
+            currentStep = 3;
+            showStep(currentStep);
+        }
+
+        // FUNCIÓN PARA MOÑA - COLOR
+        function selectColor(color) {
+            selections.color = color;
+            // SOLO AZUL PERMITE AVANZAR (agua marina)
+            if (color === 'azul') {
+                canGoForward = true;
+            }
+            showFinalResult();
+        }
+
+        // FUNCIÓN PARA ARETE - TAMAÑO
+        function selectSize(size) {
+            selections.size = size;
+            // SOLO MEDIANOS PERMITE AVANZAR (agua marina)
+            if (size === 'medianos') {
+                canGoForward = true;
+            }
+            currentStep = 3;
+            showStep(currentStep);
+        }
+
+        // FUNCIÓN PARA ARETE - FORMA
+        function selectShape(shape) {
+            selections.shape = shape;
+            // SOLO GOTA PERMITE AVANZAR (agua marina)
+            if (shape === 'gota') {
+                canGoForward = true;
+            }
+            currentStep = 4;
+            showStep(currentStep);
+        }
+
+        // FUNCIÓN PARA ARETE - TIPO DE JOYA
+        function selectJewel(jewel) {
+            selections.jewel = jewel;
+            // SOLO PIEDRA DE RÍO PERMITE AVANZAR (agua marina)
+            if (jewel === 'piedra-rio') {
+                canGoForward = true;
+            }
+            currentStep = 5;
+            showStep(currentStep);
+        }
+
+        // FUNCIÓN PARA ARETE - COLOR
+        function selectJewelColor(jewelColor) {
+            selections.jewelColor = jewelColor;
+            // SOLO TORNASOL PERMITE AVANZAR (agua marina)
+            if (jewelColor === 'tornasol') {
+                canGoForward = true;
+            }
+            showFinalResult();
+        }
+
+        // FUNCIÓN PARA MOÑO - TAMAÑO
+        function selectBowSize(size) {
+            selections.bowSize = size;
+            // SOLO GRANDE PERMITE AVANZAR (agua marina)  
+            if (size === 'grande') {
+                canGoForward = true;
+            }
+            currentStep = 3;
+            showStep(currentStep);
+        }
+
+        // FUNCIÓN PARA MOÑO - COLOR
+        function selectBowColor(color) {
+            selections.bowColor = color;
+            // SOLO NEGRO PERMITE AVANZAR (agua marina)
+            if (color === 'negro') {
+                canGoForward = true;
+            }
+            currentStep = 4;
+            showStep(currentStep);
+        }
+
+        // FUNCIÓN PARA MOÑO - PERLAS
+        function selectPearls(pearls) {
+            selections.pearls = pearls;
+            // SOLO SIN PERLAS PERMITE AVANZAR (agua marina)
+            if (pearls === 'no') {
+                canGoForward = true;
+            }
+            showFinalResult();
+        }
+
+        /* 
+        PARA AGREGAR NUEVAS OPCIONES:
+        
+        1. CREA UNA NUEVA FUNCIÓN:
+        function selectNuevaOpcion(valor) {
+            selections.nuevaOpcion = valor;
+            // DEFINE CUÁL OPCIÓN ES AGUA MARINA:
+            if (valor === 'VALOR_AGUA_MARINA') {
+                canGoForward = true;
+            }
+            // DECIDE SI ES EL ÚLTIMO PASO O CONTINÚA:
+            // Para continuar: currentStep++; showStep(currentStep);
+            // Para finalizar: showFinalResult();
+        }
+        
+        2. EN EL HTML AGREGA EL BOTÓN:
+        <button class="option-btn agua-marina" onclick="selectNuevaOpcion('VALOR')">TEXTO</button>
+        
+        3. ACTUALIZA maxSteps en selectAccessory() si agregas más pasos
+        */
+
+        function showFinalResult() {
+            // Mostrar loading
+            document.getElementById('loading').classList.add('active');
+            const allSteps = document.querySelectorAll('.step');
+            allSteps.forEach(step => step.classList.remove('active'));
+            
+            setTimeout(() => {
+                document.getElementById('loading').classList.remove('active');
+                generateResult();
+                currentStep = maxSteps;
+                showStep('final-result');
+            }, 3000);
+        }
+
+        function generateResult() {
+            let imagePath = '';
+            let summary = '';
+            
+            // GENERAR NOMBRE DE IMAGEN Y RESUMEN SEGÚN TIPO
+            if (accessoryType === 'moña') {
+                // FORMATO: moña_material_color.png
+                imagePath = `Media/moña_${selections.material}_${selections.color}.png`;//`Media/moña_${selections.material}_${selections.color}.png`;
+                summary = `<h3>🎀 Tu Moña Personalizada</h3>
+                          <p><strong>Material:</strong> ${capitalize(selections.material)}</p>
+                          <p><strong>Color:</strong> ${capitalize(selections.color)}</p>`;
+                          
+            } else if (accessoryType === 'arete') {
+                // FORMATO: arete_tamaño_forma_joya_color.png
+                imagePath = `Media/arete_${selections.size}_${selections.shape}_${selections.jewel}_${selections.jewelColor}.png`;
+                summary = `<h3>💎 Tus Aretes Personalizados</h3>
+                          <p><strong>Tamaño:</strong> ${capitalize(selections.size)}</p>
+                          <p><strong>Forma:</strong> ${capitalize(selections.shape)}</p>
+                          <p><strong>Joya:</strong> ${capitalize(selections.jewel)}</p>
+                          <p><strong>Color:</strong> ${capitalize(selections.jewelColor)}</p>`;
+                          
+            } else if (accessoryType === 'moño') {
+                // FORMATO: moño_tamaño_color_perlas.png
+                const pearlsText = selections.pearls === 'si' ? 'si' : 'no';
+                imagePath = `Media/moño_${selections.bowSize}_${selections.bowColor}_${pearlsText}.png`;
+                summary = `<h3>🎀 Tu Moño Personalizado</h3>
+                          <p><strong>Tamaño:</strong> ${capitalize(selections.bowSize)}</p>
+                          <p><strong>Color:</strong> ${capitalize(selections.bowColor)}</p>
+                          <p><strong>Accesorio:</strong> ${selections.pearls === 'si' ? 'Sí' : 'No'}</p>`;
+            }
+            
+            // MOSTRAR RESULTADO
+            document.getElementById('summary').innerHTML = summary;
+            document.getElementById('result-image').innerHTML = 
+                `<img src="${imagePath}" alt="Tu accesorio personalizado" onerror="showNoProductMessage(this)">`;
+                
+            console.log('Imagen generada:', imagePath); // PARA DEBUG
+        }
+
+        /* 
+        EJEMPLOS DE NOMBRES DE ARCHIVOS QUE DEBES CREAR:
+        
+        MOÑAS:
+        - moña_satin_rosa.png
+        - moña_peluche_azul.png  ← AGUA MARINA
+        - moña_estampado_rojo.png
+        
+        ARETES:
+        - arete_pequeños_redondos_perlas_multicolores.png
+        - arete_medianos_gota_piedra-rio_tornasol.png  ← AGUA MARINA
+        - arete_grandes_corazón_murano_clasico.png
+        
+        MOÑOS:
+        - moño_pequeño_blanco_si.png
+        - moño_grande_negro_no.png  ← AGUA MARINA
+        
+        PLACEHOLDER:
+        - placeholder.png (imagen que aparece si no encuentra la foto)
+        */
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        function showNoProductMessage(imgElement) {
+            const messageHTML = `
+                <div class="no-product-message">
+                    <h3>🔧 ¡Producto en Desarrollo!</h3>
+                    <p>Aún no tenemos este producto disponible, pero lo estaremos creando muy pronto.</p>
+                    <p>✨ ¡Gracias por tu paciencia!</p>
+                </div>
+            `;
+            imgElement.parentElement.innerHTML = messageHTML;
+        }
+        function goBack() {
+            if (currentStep > 1) {
+                canGoForward = false;
+                currentStep--;
+                
+                // Ajustar el paso según el tipo de accesorio
+                let stepId = `step${currentStep}`;
+                if (currentStep > 1) {
+                    if (accessoryType === 'moña' && currentStep === 3) {
+                        stepId = `step3-moña-color`;
+                    } else if (accessoryType === 'arete') {
+                        if (currentStep === 3) stepId = `step3-arete-forma`;
+                        else if (currentStep === 4) stepId = `step4-arete-joya`;
+                        else if (currentStep === 5) stepId = `step5-arete-color`;
+                    } else if (accessoryType === 'moño') {
+                        if (currentStep === 3) stepId = `step3-moño-color`;
+                        else if (currentStep === 4) stepId = `step4-moño-perlas`;
+                    }
+                    stepId += `-${accessoryType}`;
+                }
+                
+                showStep(currentStep);
+            }
+        }
+
+        function goNext() {
+            if (canGoForward && currentStep < maxSteps) {
+                currentStep++;
+                showStep(currentStep);
+                canGoForward = false;
+            }
+        }
+
+        function restart() {
+            currentStep = 1;
+            maxSteps = 1;
+            selections = {};
+            accessoryType = '';
+            canGoForward = false;
+            showStep(1);
+        }
+
+        function saveDesign() {
+            alert('¡Diseño guardado! Puedes encontrarlo en tu galería personal.');
+        }
+
+        // Inicializar
+        updateProgress();
+        updateNavigationButtons();
+
+     // FUNCIÓN DE DEBUG - AGREGAR AL FINAL
+    function debugInfo() {
+        console.log('currentStep:', currentStep);
+        console.log('accessoryType:', accessoryType);
+        console.log('maxSteps:', maxSteps);
+        console.log('canGoForward:', canGoForward);
+        console.log('selections:', selections);
+        
+        // Mostrar todos los elementos step que existen
+        const allSteps = document.querySelectorAll('.step');
+        console.log('Pasos disponibles:');
+        allSteps.forEach(step => {
+            console.log('- ID:', step.id, 'Display:', step.style.display, 'Classes:', step.className);
+        });
+    }
+    </script>
+</body>
+</html>

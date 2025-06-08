@@ -1,0 +1,79 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f8f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#formulario {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 500px;
+}
+
+#pregunta {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+#opciones button {
+  display: block;
+  margin: 8px 0;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  background: #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#opciones button:hover {
+  background: #b2ebf2;
+}
+
+.navegacion {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navegacion button {
+  padding: 10px 20px;
+  border: none;
+  background: #00796b;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.navegacion button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.barra-carga {
+  width: 100%;
+  height: 20px;
+  background: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progreso {
+  height: 100%;
+  width: 0%;
+  background: #4caf50;
+  transition: width 0.3s;
+}
+
+.oculto {
+  display: none;
+}
